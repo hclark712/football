@@ -23,8 +23,8 @@ DEFAULT_PLAYERS = [
     "Danny",
 ]
 DEFAULT_TEAM_SIZE = 7
-HISTORY_FILE = Path(__file__).with_name("football.csv")
-LEGACY_HISTORY_FILE = Path(__file__).with_name("football_data.csv")
+HISTORY_FILE = Path(__file__).with_name("football_data.csv")
+LEGACY_HISTORY_FILE = Path(__file__).with_name("football.csv")
 
 
 @st.cache_data(show_spinner=False)
