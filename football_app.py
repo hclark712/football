@@ -83,12 +83,18 @@ def generate_balanced_teams(players: list[str], team_size: int, history: pd.Data
         team_a_rank = sum(scores[player] for player in team)
         team_b = [player for player in players if player not in team]
         team_b_rank = sum(scores[player] for player in team_b)
-        match_ratings.append((abs(team_a_rank - team_b_rank), team, tuple(team_b)))
+        match_ratings.append(
+            {
+                "match_rating": abs(team_a_rank - team_b_rank),
+                "team_a": team,
+                "team_b": tuple(team_b),
+            }
+        )
 
-    best_rating = min(rating for rating, _, _ in match_ratings)
-    best_options = [option for option in match_ratings if option[0] == best_rating]
+    best_rating = min(option["match_rating"] for option in match_ratings)
+    best_options = [option for option in match_ratings if option["match_rating"] == best_rating]
     chosen = random.choice(best_options)
-    return chosen, scores
+    return chosen, best_options, scores
 
 
 st.set_page_config(page_title="Football Team Generator", page_icon="⚽")
@@ -159,11 +165,21 @@ if players:
     if len(players) < team_size:
         st.warning("The team size cannot be larger than the number of players.")
     else:
-        best_option, scores = generate_balanced_teams(players, team_size, history)
-        _, team_a, team_b = best_option
+        selected_option, all_options, scores = generate_balanced_teams(players, team_size, history)
+        team_a = selected_option["team_a"]
+        team_b = selected_option["team_b"]
+
         st.subheader("Balanced teams")
+        st.write("Selected balanced split")
         st.write(f"Team A: {list(team_a)}")
         st.write(f"Team B: {list(team_b)}")
+
+        st.subheader("All equally balanced options")
+        if len(all_options) == 1:
+            st.write("Only one equally balanced split was found.")
+        else:
+            for index, option in enumerate(all_options, start=1):
+                st.write(f"{index}. Team A: {list(option['team_a'])} | Team B: {list(option['team_b'])}")
 
         st.caption("Player rankings")
         ranking_df = pd.DataFrame(
