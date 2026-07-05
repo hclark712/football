@@ -26,8 +26,41 @@ DEFAULT_TEAM_SIZE = 7
 HISTORY_FILE = Path(__file__).with_name("football_data.csv")
 LEGACY_HISTORY_FILE = Path(__file__).with_name("football.csv")
 
+# streamlit_app.py
 
+import streamlit as st
+from supabase import create_client, Client
+
+# Initialize connection.
+# Uses st.cache_resource to only run once.
+def init_connection():
+    url = st.secrets.connections.supabase["SUPABASE_URL"]
+    key = st.secrets.connections.supabase["SUPABASE_KEY"]
+    return create_client(url, key)
+
+supabase = init_connection()
+
+# Perform query.
 @st.cache_data(show_spinner=False)
+def run_query():
+    return supabase.table("football_data").select("*").execute()
+
+rows = run_query()
+
+player_list = []
+result_list = []
+index_list = []
+for row in rows.data:
+    index_list.append(row["index"])
+    player_list.append(row["Player"])
+    result_list.append(row["Result"])
+
+football_data = pd.DataFrame({
+    "index": index_list,
+    "Player": player_list,
+    "Result": result_list,
+}).set_index("index")
+
 def load_history() -> pd.DataFrame:
     if HISTORY_FILE.exists():
         return pd.read_csv(HISTORY_FILE)
@@ -100,7 +133,7 @@ def generate_balanced_teams(players: list[str], team_size: int, history: pd.Data
 st.set_page_config(page_title="Football Team Generator", page_icon="⚽")
 st.title("Football Team Generator")
 
-history = load_history()
+history = football_data
 
 with st.sidebar:
     st.header("Setup")
@@ -191,3 +224,4 @@ if players:
         st.dataframe(ranking_df, use_container_width=True)
 else:
     st.info("Add at least one player name to generate teams.")
+
