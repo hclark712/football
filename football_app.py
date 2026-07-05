@@ -147,6 +147,9 @@ st.title("Football Team Generator")
 
 history = football_data
 
+for row in history.reset_index().iterrows():
+    print(row)
+
 with st.sidebar:
     st.header("Setup")
     player_text = st.text_area(
