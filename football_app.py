@@ -5,6 +5,7 @@ import random
 import numpy as np
 import pandas as pd
 import streamlit as st
+from supabase import create_client, Client 
 
 DEFAULT_PLAYERS = [
     "Charlie",
@@ -23,13 +24,6 @@ DEFAULT_PLAYERS = [
     "Danny",
 ]
 DEFAULT_TEAM_SIZE = 7
-HISTORY_FILE = Path(__file__).with_name("football_data.csv")
-LEGACY_HISTORY_FILE = Path(__file__).with_name("football.csv")
-
-# streamlit_app.py
-
-import streamlit as st
-from supabase import create_client, Client
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
@@ -60,17 +54,6 @@ football_data = pd.DataFrame({
     "Player": player_list,
     "Result": result_list,
 }).set_index("index")
-
-def load_history() -> pd.DataFrame:
-    if HISTORY_FILE.exists():
-        return pd.read_csv(HISTORY_FILE)
-
-    if LEGACY_HISTORY_FILE.exists():
-        history = pd.read_csv(LEGACY_HISTORY_FILE)
-        history.to_csv(HISTORY_FILE, index=False)
-        return history
-
-    return pd.DataFrame(columns=["Player", "Result"])
 
 
 def save_history(history: pd.DataFrame) -> None:

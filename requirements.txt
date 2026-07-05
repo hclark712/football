@@ -1,1 +1,5 @@
 supabase
+numpy
+pandas
+itertools
+streamlit
