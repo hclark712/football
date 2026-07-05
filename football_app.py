@@ -74,7 +74,19 @@ def load_history() -> pd.DataFrame:
 
 
 def save_history(history: pd.DataFrame) -> None:
-    history.to_csv(HISTORY_FILE, index=False)
+    dict_list = []
+    for row in history.reset_index().iterrows():
+        temp_dict = {
+            "index": row["index"],
+            "Player": row["Player"],
+            "Result": row["Result"]
+        }
+        dict_list.append(temp_dict)
+    response = (
+        supabase.table("foootball_data")
+        .upsert(dict_list)
+        .execute()
+    )
 
 
 def parse_players(player_text: str) -> list[str]:
