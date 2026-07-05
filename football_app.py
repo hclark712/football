@@ -83,7 +83,7 @@ def save_history(history: pd.DataFrame) -> None:
         }
         dict_list.append(temp_dict)
     response = (
-        supabase.table("foootball_data")
+        supabase.table("football_data")
         .upsert(dict_list)
         .execute()
     )
