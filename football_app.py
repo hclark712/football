@@ -75,7 +75,7 @@ def load_history() -> pd.DataFrame:
 
 def save_history(history: pd.DataFrame) -> None:
     dict_list = []
-    for row in history.reset_index().iterrows():
+    for index, row in history.reset_index().iterrows():
         temp_dict = {
             "index": row["index"],
             "Player": row["Player"],
@@ -146,9 +146,6 @@ st.set_page_config(page_title="Football Team Generator", page_icon="⚽")
 st.title("Football Team Generator")
 
 history = football_data
-
-for row in history.reset_index().iterrows():
-    print(row)
 
 with st.sidebar:
     st.header("Setup")
